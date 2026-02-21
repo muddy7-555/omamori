@@ -1,4 +1,4 @@
-index.html
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -8,17 +8,20 @@ index.html
     <style>
         body { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; padding: 0; background: #f8f9fa; color: #333; line-height: 1.6; }
         .header { background: #b71c1c; color: white; padding: 15px; text-align: center; font-weight: bold; font-size: 1.2rem; }
-        .hero { background: white; padding: 30px 20px; text-align: center; border-bottom: 4px solid #b71c1c; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .hero { background: white; padding: 20px; text-align: center; border-bottom: 4px solid #b71c1c; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .message { font-size: 1.5rem; color: #b71c1c; margin-bottom: 5px; font-weight: bold; }
-        .sub-message { font-size: 1rem; color: #666; }
-        .container { padding: 20px; max-width: 500px; margin: auto; }
-        .btn { display: block; width: 100%; padding: 18px; margin-bottom: 15px; border-radius: 10px; border: none; font-size: 1.1rem; font-weight: bold; cursor: pointer; color: white; text-decoration: none; text-align: center; box-sizing: border-box; }
+        .container { padding: 15px; max-width: 500px; margin: auto; }
+        .label { font-weight: bold; margin: 15px 0 5px; display: block; color: #555; }
+        .btn { display: block; width: 100%; padding: 15px; margin-bottom: 10px; border-radius: 10px; border: none; font-size: 1rem; font-weight: bold; cursor: pointer; color: white; text-decoration: none; text-align: center; box-sizing: border-box; transition: 0.2s; }
         .btn-red { background: #d32f2f; box-shadow: 0 4px #9a0007; }
         .btn-blue { background: #1976d2; box-shadow: 0 4px #004ba0; }
         .btn-green { background: #388e3c; box-shadow: 0 4px #00600f; }
+        .btn-gray { background: #757575; box-shadow: 0 4px #424242; }
         .btn:active { transform: translateY(2px); box-shadow: 0 2px #666; }
-        .card { background: #fff9c4; border: 2px dashed #fbc02d; padding: 15px; border-radius: 10px; margin-top: 10px; display: none; text-align: left; font-size: 0.95rem; }
+        textarea { width: 100%; height: 80px; padding: 10px; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box; font-size: 1rem; margin-bottom: 10px; }
+        .card { background: #fff9c4; border: 2px dashed #fbc02d; padding: 15px; border-radius: 10px; margin-top: 20px; display: none; }
         .footer { text-align: center; padding: 20px; font-size: 0.8rem; color: #999; }
+        hr { border: 0; border-top: 1px solid #ccc; margin: 10px 0; }
     </style>
 </head>
 <body>
@@ -31,54 +34,70 @@ index.html
 </div>
 
 <div class="container">
+    <span class="label">Step 1: Emergency?</span>
     <a href="tel:119" class="btn btn-red" id="btn-119">Emergency Call (119)</a>
-    
-    <a href="https://www.google.com/maps/search/English+speaking+hospital/@35.6812,139.7671,13z" class="btn btn-blue" id="btn-map" target="_blank">Find English-Speaking Hospitals</a>
-    
-    <button class="btn btn-green" id="btn-card" onclick="toggleCard()">Show to Hospital Reception</button>
+
+    <span class="label">Step 2: What is your symptom? (Select)</span>
+    <button class="btn btn-blue" onclick="setSymptom('Headache / 頭痛')">Headache / 頭痛</button>
+    <button class="btn btn-blue" onclick="setSymptom('Itchy / かゆみ')">Itchy / かゆみ</button>
+    <button class="btn btn-blue" onclick="setSymptom('Leg & Foot Pain / 足・腰の痛み')">Leg & Foot Pain / 足・腰の痛み</button>
+    <button class="btn btn-blue" onclick="setSymptom('Stomachache / お腹の不調')">Stomachache / お腹の不調</button>
+
+    <span class="label">Or type your symptom (手動入力):</span>
+    <textarea id="manual-input" placeholder="Type here... (e.g. Fever, Toothache)"></textarea>
+    <button class="btn btn-green" onclick="showCard()">Show to Hospital Reception</button>
 
     <div id="reception-card" class="card">
         <strong>【医療機関の受付の方へ】</strong><br>
-        この方は私のタクシーの乗客で、急な体調不良により来院されました。
-        言語や支払いの面でサポートが必要な可能性があります。診察をお願いいたします。<br>
+        この方は私のタクシーの乗客で、以下の症状により来院されました。診察をお願いいたします。<br>
+        <hr>
+        <strong>症状：<span id="display-symptom"></span></strong><br>
         <hr>
         <strong>[To Patient]</strong><br>
         Please show this screen to the hospital staff.
     </div>
+    
+    <a href="https://www.google.com/maps/search/English+speaking+hospital" class="btn btn-gray" style="margin-top:20px;">Find Nearby Hospital (Google Maps)</a>
 </div>
 
-<div class="footer">
-    Provided by Driver Kei / Medical Bridge Project
-</div>
+<div class="footer">Provided by Driver Kei / Medical Bridge Project</div>
 
 <script>
     const userLang = navigator.language || navigator.userLanguage;
     const content = {
-        en: { msg: "You are safe now.", sub: "Emergency medical guide for your stay.", b119: "Emergency Call (119)", bMap: "Find English-Speaking Hospitals", bCard: "Show to Hospital Reception" },
-        zh: { msg: "您现在安全了。", sub: "东京旅行期间的医疗指南。", b119: "呼叫急救 (119)", bMap: "查找中文对应病院", bCard: "向医院柜台出示此信息" },
-        ko: { msg: "이제 안심하세요.", sub: "도쿄 체류 중 의료 지원 가이드.", b119: "긴급 전화 (119)", bMap: "한국어 대응 병원 찾기", bCard: "병원 접수에 이 화면을 보여주세요" },
-        ja: { msg: "ご安心ください。", sub: "東京滞在中の医療をサポートします。", b119: "緊急通報 (119)", bMap: "近くの病院を探す", bCard: "病院の受付に見せる" }
+        en: { msg: "You are safe now.", sub: "Emergency medical guide." },
+        ja: { msg: "ご安心ください。", sub: "東京滞在中の医療をサポートします。" }
     };
 
-    let lang = 'en';
-    if (userLang.includes('zh')) lang = 'zh';
-    else if (userLang.includes('ko')) lang = 'ko';
-    else if (userLang.includes('ja')) lang = 'ja';
+    let lang = userLang.includes('ja') ? 'ja' : 'en';
+    document.getElementById('msg').innerText = content[lang].msg;
+    document.getElementById('sub').innerText = content[lang].sub;
 
-    const c = content[lang];
-    document.getElementById('msg').innerText = c.msg;
-    document.getElementById('sub').innerText = c.sub;
-    document.getElementById('btn-119').innerText = c.b119;
-    document.getElementById('btn-map').innerText = c.bMap;
-    document.getElementById('btn-card').innerText = c.bCard;
+    let selectedSymptom = "";
 
-    function toggleCard() {
+    function setSymptom(s) {
+        selectedSymptom = s;
+        document.getElementById('manual-input').value = ""; // クリア
+        showCard();
+    }
+
+    function showCard() {
+        const manual = document.getElementById('manual-input').value;
+        const display = document.getElementById('display-symptom');
         const card = document.getElementById('reception-card');
-        card.style.display = (card.style.display === 'block') ? 'none' : 'block';
+        
+        if (manual) {
+            display.innerText = manual;
+        } else {
+            display.innerText = selectedSymptom || "体調不良 (Unwell)";
+        }
+        
+        card.style.display = 'block';
+        card.scrollIntoView({ behavior: 'smooth' });
     }
 </script>
 
 </body>
-
 </html>
+
 
