@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex,nofollow">
+    <title>Medical Bridge Omamori</title>
+    <style>
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; padding: 0; background: #f8f9fa; color: #333; line-height: 1.6; }
+        .header { background: #b71c1c; color: white; padding: 15px; text-align: center; font-weight: bold; font-size: 1.2rem; }
+        .hero { background: white; padding: 20px; text-align: center; border-bottom: 4px solid #b71c1c; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .message { font-size: 1.5rem; color: #b71c1c; margin-bottom: 5px; font-weight: bold; }
+        .container { padding: 15px; max-width: 500px; margin: auto; }
+        .label { font-weight: bold; margin: 15px 0 5px; display: block; color: #555; }
+        .btn { display: block; width: 100%; padding: 15px; margin-bottom: 10px; border-radius: 10px; border: none; font-size: 1rem; font-weight: bold; cursor: pointer; color: white; text-decoration: none; text-align: center; box-sizing: border-box; transition: 0.2s; }
+        .btn-red { background: #d32f2f; box-shadow: 0 4px #9a0007; }
+        .btn-blue { background: #1976d2; box-shadow: 0 4px #004ba0; }
+        .btn-green { background: #388e3c; box-shadow: 0 4px #00600f; }
+        .btn-gray { background: #757575; box-shadow: 0 4px #424242; }
+        .btn:active { transform: translateY(2px); box-shadow: 0 2px #666; }
+        textarea { width: 100%; height: 80px; padding: 10px; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box; font-size: 1rem; margin-bottom: 10px; }
+        .card { background: #fff9c4; border: 2px dashed #fbc02d; padding: 15px; border-radius: 10px; margin-top: 20px; display: none; }
+        .footer { text-align: center; padding: 20px; font-size: 0.8rem; color: #999; }
+        hr { border: 0; border-top: 1px solid #ccc; margin: 10px 0; }
+    </style>
+</head>
+<body>
+
+<div class="header">Medical Bridge "OMAMORI"</div>
+
+<div class="hero">
+    <div id="msg" class="message">Safe Travel in Tokyo</div>
+    <div id="sub" class="sub-message">Emergency Medical Support</div>
+</div>
+
+<div class="container">
+    <span class="label">Step 1: Emergency?</span>
+    <a href="tel:119" class="btn btn-red" id="btn-119">Emergency Call (119)</a>
+
+    <span class="label">Step 2: What is your symptom? (Select)</span>
+    <button class="btn btn-blue" onclick="setSymptom('Headache / 頭痛')">Headache / 頭痛</button>
+    <button class="btn btn-blue" onclick="setSymptom('Itchy / かゆみ')">Itchy / かゆみ</button>
+    <button class="btn btn-blue" onclick="setSymptom('Leg & Foot Pain / 足・腰の痛み')">Leg & Foot Pain / 足・腰の痛み</button>
+    <button class="btn btn-blue" onclick="setSymptom('Stomachache / お腹の不調')">Stomachache / お腹の不調</button>
+
+    <span class="label">Or type your symptom (手動入力):</span>
+    <textarea id="manual-input" placeholder="Type here... (e.g. Fever, Toothache)"></textarea>
+    <button class="btn btn-green" onclick="showCard()">Show to Hospital Reception</button>
+
+    <div id="reception-card" class="card">
+        <strong>【医療機関の受付の方へ】</strong><br>
+        この方は私のタクシーの乗客で、以下の症状により来院されました。診察をお願いいたします。<br>
+        <hr>
+        <strong>症状：<span id="display-symptom"></span></strong><br>
+        <hr>
+        <strong>[To Patient]</strong><br>
+        Please show this screen to the hospital staff.
+    </div>
+    
+    <a href="https://www.google.com/maps/search/English+speaking+hospital" class="btn btn-gray" style="margin-top:20px;">Find Nearby Hospital (Google Maps)</a>
+</div>
+
+<div class="footer">Provided by Driver Kei / Medical Bridge Project</div>
+
+<script>
+    const userLang = navigator.language || navigator.userLanguage;
+    const content = {
+        en: { msg: "You are safe now.", sub: "Emergency medical guide." },
+        ja: { msg: "ご安心ください。", sub: "東京滞在中の医療をサポートします。" }
+    };
+
+    let lang = userLang.includes('ja') ? 'ja' : 'en';
+    document.getElementById('msg').innerText = content[lang].msg;
+    document.getElementById('sub').innerText = content[lang].sub;
+
+    let selectedSymptom = "";
+
+    function setSymptom(s) {
+        selectedSymptom = s;
+        document.getElementById('manual-input').value = ""; // クリア
+        showCard();
+    }
+
+    function showCard() {
+        const manual = document.getElementById('manual-input').value;
+        const display = document.getElementById('display-symptom');
+        const card = document.getElementById('reception-card');
+        
+        if (manual) {
+            display.innerText = manual;
+        } else {
+            display.innerText = selectedSymptom || "体調不良 (Unwell)";
+        }
+        
+        card.style.display = 'block';
+        card.scrollIntoView({ behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>
