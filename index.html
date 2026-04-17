@@ -1,103 +1,337 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="robots" content="noindex,nofollow">
-    <title>Medical Bridge Omamori</title>
-    <style>
-        body { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; padding: 0; background: #f8f9fa; color: #333; line-height: 1.6; }
-        .header { background: #b71c1c; color: white; padding: 15px; text-align: center; font-weight: bold; font-size: 1.2rem; }
-        .hero { background: white; padding: 20px; text-align: center; border-bottom: 4px solid #b71c1c; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .message { font-size: 1.5rem; color: #b71c1c; margin-bottom: 5px; font-weight: bold; }
-        .container { padding: 15px; max-width: 500px; margin: auto; }
-        .label { font-weight: bold; margin: 15px 0 5px; display: block; color: #555; }
-        .btn { display: block; width: 100%; padding: 15px; margin-bottom: 10px; border-radius: 10px; border: none; font-size: 1rem; font-weight: bold; cursor: pointer; color: white; text-decoration: none; text-align: center; box-sizing: border-box; transition: 0.2s; }
-        .btn-red { background: #d32f2f; box-shadow: 0 4px #9a0007; }
-        .btn-blue { background: #1976d2; box-shadow: 0 4px #004ba0; }
-        .btn-green { background: #388e3c; box-shadow: 0 4px #00600f; }
-        .btn-gray { background: #757575; box-shadow: 0 4px #424242; }
-        .btn:active { transform: translateY(2px); box-shadow: 0 2px #666; }
-        textarea { width: 100%; height: 80px; padding: 10px; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box; font-size: 1rem; margin-bottom: 10px; }
-        .card { background: #fff9c4; border: 2px dashed #fbc02d; padding: 15px; border-radius: 10px; margin-top: 20px; display: none; }
-        .footer { text-align: center; padding: 20px; font-size: 0.8rem; color: #999; }
-        hr { border: 0; border-top: 1px solid #ccc; margin: 10px 0; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>Omamori — Medical Guide for Visitors to Japan</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f7f7f5; min-height: 100vh; }
+  .app { max-width: 420px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+  .lang-bar { display: flex; gap: 8px; justify-content: flex-end; margin-bottom: 1.5rem; }
+  .lang-btn { font-size: 12px; padding: 5px 12px; border: 1px solid #ccc; border-radius: 20px; background: white; color: #666; cursor: pointer; }
+  .lang-btn.active { background: #1D9E75; color: white; border-color: #1D9E75; }
+  .hero { text-align: center; margin-bottom: 2rem; }
+  .hero-icon { font-size: 52px; margin-bottom: 0.5rem; }
+  .hero-title { font-size: 22px; font-weight: 600; color: #1a1a1a; margin-bottom: 0.25rem; }
+  .hero-sub { font-size: 14px; color: #777; }
+  .emergency-btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 1rem; background: #E24B4A; color: white; border: none; border-radius: 14px; font-size: 17px; font-weight: 600; cursor: pointer; margin-bottom: 2rem; -webkit-tap-highlight-color: transparent; }
+  .emergency-btn:active { opacity: 0.85; transform: scale(0.98); }
+  .section-label { font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.75rem; }
+  .symptoms-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.5rem; }
+  .symptom-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 1rem 0.5rem; background: white; border: 1px solid #e0e0e0; border-radius: 14px; cursor: pointer; font-size: 13px; color: #333; -webkit-tap-highlight-color: transparent; }
+  .symptom-btn.selected { background: #E1F5EE; border: 2px solid #1D9E75; color: #0F6E56; font-weight: 600; }
+  .symptom-icon { font-size: 30px; }
+  .input-area { margin-bottom: 1.5rem; }
+  .symptom-input { width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 10px; font-size: 14px; font-family: inherit; color: #333; background: white; resize: none; }
+  .symptom-input:focus { outline: none; border-color: #1D9E75; }
+  .action-btn { width: 100%; padding: 1rem; background: #1D9E75; color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 600; cursor: pointer; margin-bottom: 0.75rem; -webkit-tap-highlight-color: transparent; }
+  .action-btn:active { opacity: 0.85; transform: scale(0.98); }
+  .card-view { display: none; background: white; border: 1px solid #e0e0e0; border-radius: 14px; padding: 1.5rem; margin-bottom: 1rem; }
+  .card-view.show { display: block; }
+  .card-title-label { font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.75rem; }
+  .card-ja { font-size: 15px; color: #1a1a1a; line-height: 1.8; padding: 1rem; background: #f7f7f5; border-radius: 10px; white-space: pre-wrap; margin-bottom: 0.75rem; }
+  .card-symptoms-list { font-size: 13px; color: #0F6E56; font-weight: 600; }
+  .maps-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 1rem; background: white; color: #333; border: 1px solid #e0e0e0; border-radius: 14px; font-size: 15px; cursor: pointer; text-decoration: none; margin-bottom: 0.75rem; -webkit-tap-highlight-color: transparent; }
+  .maps-btn:active { background: #f0f0f0; }
+  .footer { text-align: center; margin-top: 2rem; font-size: 11px; color: #bbb; }
+</style>
 </head>
 <body>
-
-<div class="header">Medical Bridge "OMAMORI"</div>
-
-<div class="hero">
-    <div id="msg" class="message">Safe Travel in Tokyo</div>
-    <div id="sub" class="sub-message">Emergency Medical Support</div>
+<div class="app">
+  <div class="lang-bar">
+    <button class="lang-btn active" onclick="setLang('en',this)">EN</button>
+    <button class="lang-btn" onclick="setLang('zh',this)">中文</button>
+    <button class="lang-btn" onclick="setLang('ko',this)">한국어</button>
+    <button class="lang-btn" onclick="setLang('ja',this)">日本語</button>
+  </div>
+  <div class="hero">
+    <div class="hero-icon">🏥</div>
+    <div class="hero-title" id="hero-title">Feeling unwell?</div>
+    <div class="hero-sub" id="hero-sub">Select your symptoms below</div>
+  </div>
+  <button class="emergency-btn" onclick="callEmergency()">
+    <span style="font-size:22px;">🚨</span>
+    <span id="emergency-label">Emergency — Call 119</span>
+  </button>
+  <div class="section-label" id="section-symptoms">Your symptoms</div>
+  <div class="symptoms-grid">
+    <button class="symptom-btn" onclick="toggleSymptom(this,'headache')">
+      <span class="symptom-icon">🤕</span>
+      <span id="s-headache">Headache</span>
+    </button>
+    <button class="symptom-btn" onclick="toggleSymptom(this,'stomach')">
+      <span class="symptom-icon">🤢</span>
+      <span id="s-stomach">Stomach pain</span>
+    </button>
+    <button class="symptom-btn" onclick="toggleSymptom(this,'itch')">
+      <span class="symptom-icon">😣</span>
+      <span id="s-itch">Itching / rash</span>
+    </button>
+    <button class="symptom-btn" onclick="toggleSymptom(this,'foot')">
+      <span class="symptom-icon">🦵</span>
+      <span id="s-foot">Leg / foot pain</span>
+    </button>
+    <button class="symptom-btn" onclick="toggleSymptom(this,'fever')">
+      <span class="symptom-icon">🌡️</span>
+      <span id="s-fever">Fever / chills</span>
+    </button>
+    <button class="symptom-btn" onclick="toggleSymptom(this,'dizzy')">
+      <span class="symptom-icon">💫</span>
+      <span id="s-dizzy">Dizziness</span>
+    </button>
+  </div>
+  <div class="input-area">
+    <div class="section-label" id="section-other">Other symptoms</div>
+    <textarea class="symptom-input" id="other-input" rows="2" placeholder="Describe in your language..."></textarea>
+  </div>
+  <button class="action-btn" onclick="showCard()" id="card-btn">Show reception card</button>
+  <div class="card-view" id="reception-card">
+    <div class="card-title-label" id="card-title-label">Show this to the clinic receptionist</div>
+    <div class="card-ja" id="card-ja-text"></div>
+    <div class="card-symptoms-list" id="card-symptoms-display"></div>
+  </div>
+  <a class="maps-btn" id="maps-link" href="#" onclick="openMaps(event)">
+    <span>📍</span>
+    <span id="maps-label">Find nearby clinic</span>
+  </a>
+  <div class="footer">Omamori — Medical Bridge</div>
 </div>
-
-<div class="container">
-    <span class="label">Step 1: Emergency?</span>
-    <a href="tel:119" class="btn btn-red" id="btn-119">Emergency Call (119)</a>
-
-    <span class="label">Step 2: What is your symptom? (Select)</span>
-    <button class="btn btn-blue" onclick="setSymptom('Headache / 頭痛')">Headache / 頭痛</button>
-    <button class="btn btn-blue" onclick="setSymptom('Itchy / かゆみ')">Itchy / かゆみ</button>
-    <button class="btn btn-blue" onclick="setSymptom('Leg & Foot Pain / 足・腰の痛み')">Leg & Foot Pain / 足・腰の痛み</button>
-    <button class="btn btn-blue" onclick="setSymptom('Stomachache / お腹の不調')">Stomachache / お腹の不調</button>
-
-    <span class="label">Or type your symptom (手動入力):</span>
-    <textarea id="manual-input" placeholder="Type here... (e.g. Fever, Toothache)"></textarea>
-    <button class="btn btn-green" onclick="showCard()">Show to Hospital Reception</button>
-
-    <div id="reception-card" class="card">
-        <strong>【医療機関の受付の方へ】</strong><br>
-        この方は私のタクシーの乗客で、以下の症状により来院されました。診察をお願いいたします。<br>
-        <hr>
-        <strong>症状：<span id="display-symptom"></span></strong><br>
-        <hr>
-        <strong>[To Patient]</strong><br>
-        Please show this screen to the hospital staff.
-    </div>
-    
-    <a href="https://www.google.com/maps/search/English+speaking+hospital" class="btn btn-gray" style="margin-top:20px;">Find Nearby Hospital (Google Maps)</a>
-</div>
-
-<div class="footer">Provided by Driver Kei / Medical Bridge Project</div>
-
 <script>
-    const userLang = navigator.language || navigator.userLanguage;
-    const content = {
-        en: { msg: "You are safe now.", sub: "Emergency medical guide." },
-        ja: { msg: "ご安心ください。", sub: "東京滞在中の医療をサポートします。" }
-    };
-
-    let lang = userLang.includes('ja') ? 'ja' : 'en';
-    document.getElementById('msg').innerText = content[lang].msg;
-    document.getElementById('sub').innerText = content[lang].sub;
-
-    let selectedSymptom = "";
-
-    function setSymptom(s) {
-        selectedSymptom = s;
-        document.getElementById('manual-input').value = ""; // クリア
-        showCard();
-    }
-
-    function showCard() {
-        const manual = document.getElementById('manual-input').value;
-        const display = document.getElementById('display-symptom');
-        const card = document.getElementById('reception-card');
-        
-        if (manual) {
-            display.innerText = manual;
-        } else {
-            display.innerText = selectedSymptom || "体調不良 (Unwell)";
-        }
-        
-        card.style.display = 'block';
-        card.scrollIntoView({ behavior: 'smooth' });
-    }
+var lang='en';
+var selected={};
+var t={en:{heroTitle:'Feeling unwell?',heroSub:'Select your symptoms below',emergency:'Emergency — Call 119',sectionSymptoms:'Your symptoms',sectionOther:'Other symptoms',otherPlaceholder:'Describe in your language...',cardBtn:'Show reception card',cardTitleLabel:'Show this to the clinic receptionist',mapsLabel:'Find nearby clinic',symptoms:{headache:'Headache',stomach:'Stomach pain',itch:'Itching / rash',foot:'Leg / foot pain',fever:'Fever / chills',dizzy:'Dizziness'}},zh:{heroTitle:'感觉不舒服？',heroSub:'请选择您的症状',emergency:'紧急情况 — 拨打119',sectionSymptoms:'您的症状',sectionOther:'其他症状',otherPlaceholder:'用您的语言描述...',cardBtn:'显示接待卡',cardTitleLabel:'请出示给诊所接待员',mapsLabel:'寻找附近诊所',symptoms:{headache:'头痛',stomach:'胃痛',itch:'瘙痒/皮疹',foot:'腿/脚疼痛',fever:'发烧/发冷',dizzy:'头晕'}},ko:{heroTitle:'몸이 불편하신가요?',heroSub:'증상을 선택하세요',emergency:'응급 — 119 전화',sectionSymptoms:'증상',sectionOther:'기타 증상',otherPlaceholder:'증상을 설명해주세요...',cardBtn:'접수 카드 보기',cardTitleLabel:'이것을 접수원에게 보여주세요',mapsLabel:'근처 병원 찾기',symptoms:{headache:'두통',stomach:'복통',itch:'가려움/발진',foot:'다리/발 통증',fever:'발열/오한',dizzy:'어지러움'}},ja:{heroTitle:'体調が悪いですか？',heroSub:'症状を選んでください',emergency:'緊急 — 119番に電話',sectionSymptoms:'症状',sectionOther:'その他の症状',otherPlaceholder:'症状を入力してください...',cardBtn:'受付カードを表示',cardTitleLabel:'受付スタッフに見せてください',mapsLabel:'近くのクリニックを探す',symptoms:{headache:'頭痛',stomach:'腹痛',itch:'かゆみ・発疹',foot:'足・脚の痛み',fever:'発熱・悪寒',dizzy:'めまい'}}};
+var jaSymptoms={headache:'頭痛があります。',stomach:'お腹が痛いです。',itch:'かゆみ・発疹があります。',foot:'足・脚が痛いです。',fever:'熱・悪寒があります。',dizzy:'めまいがします。'};
+function setLang(l,btn){lang=l;document.querySelectorAll('.lang-btn').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');var d=t[l];document.getElementById('hero-title').textContent=d.heroTitle;document.getElementById('hero-sub').textContent=d.heroSub;document.getElementById('emergency-label').textContent=d.emergency;document.getElementById('section-symptoms').textContent=d.sectionSymptoms;document.getElementById('section-other').textContent=d.sectionOther;document.getElementById('other-input').placeholder=d.otherPlaceholder;document.getElementById('card-btn').textContent=d.cardBtn;document.getElementById('card-title-label').textContent=d.cardTitleLabel;document.getElementById('maps-label').textContent=d.mapsLabel;Object.keys(d.symptoms).forEach(function(k){document.getElementById('s-'+k).textContent=d.symptoms[k];});}
+function toggleSymptom(btn,key){if(selected[key]){delete selected[key];btn.classList.remove('selected');}else{selected[key]=true;btn.classList.add('selected');}}
+function showCard(){var keys=Object.keys(selected);var other=document.getElementById('other-input').value.trim();var jaText='症状をお知らせします。\n\n';var displayList=[];if(keys.length===0&&!other){jaText+='症状の選択をお願いします。';}else{keys.forEach(function(k){jaText+=jaSymptoms[k]+'\n';displayList.push(t[lang].symptoms[k]);});if(other){jaText+='\nその他：'+other;displayList.push(other);}}jaText+='\n\n（外国人患者です。英語での対応をお願いできますか？）';document.getElementById('card-ja-text').textContent=jaText;document.getElementById('card-symptoms-display').textContent=displayList.join(' · ');var card=document.getElementById('reception-card');card.classList.add('show');setTimeout(function(){card.scrollIntoView({behavior:'smooth',block:'nearest'});},100);}
+function callEmergency(){if(confirm('Call 119 (Emergency / 救急)?')){window.location.href='tel:119';}}
+function openMaps(e){e.preventDefault();window.open('https://www.google.com/maps/search/クリニック+内科','_blank');}
 </script>
-
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>Omamori — Medical Guide for Visitors to Japan</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f7f7f5; min-height: 100vh; }
+  .app { max-width: 420px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+  .lang-bar { display: flex; gap: 8px; justify-content: flex-end; margin-bottom: 1.5rem; }
+  .lang-btn { font-size: 12px; padding: 5px 12px; border: 1px solid #ccc; border-radius: 20px; background: white; color: #666; cursor: pointer; }
+  .lang-btn.active { background: #1D9E75; color: white; border-color: #1D9E75; }
+  .hero { text-align: center; margin-bottom: 2rem; }
+  .hero-icon { font-size: 52px; margin-bottom: 0.5rem; }
+  .hero-title { font-size: 22px; font-weight: 600; color: #1a1a1a; margin-bottom: 0.25rem; }
+  .hero-sub { font-size: 14px; color: #777; }
+  .emergency-btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 1rem; background: #E24B4A; color: white; border: none; border-radius: 14px; font-size: 17px; font-weight: 600; cursor: pointer; margin-bottom: 2rem; -webkit-tap-highlight-color: transparent; }
+  .emergency-btn:active { opacity: 0.85; transform: scale(0.98); }
+  .section-label { font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.75rem; }
+  .symptoms-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.5rem; }
+  .symptom-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 1rem 0.5rem; background: white; border: 1px solid #e0e0e0; border-radius: 14px; cursor: pointer; font-size: 13px; color: #333; -webkit-tap-highlight-color: transparent; }
+  .symptom-btn.selected { background: #E1F5EE; border: 2px solid #1D9E75; color: #0F6E56; font-weight: 600; }
+  .symptom-icon { font-size: 30px; }
+  .input-area { margin-bottom: 1.5rem; }
+  .symptom-input { width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 10px; font-size: 14px; font-family: inherit; color: #333; background: white; resize: none; }
+  .symptom-input:focus { outline: none; border-color: #1D9E75; }
+  .action-btn { width: 100%; padding: 1rem; background: #1D9E75; color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 600; cursor: pointer; margin-bottom: 0.75rem; -webkit-tap-highlight-color: transparent; }
+  .action-btn:active { opacity: 0.85; transform: scale(0.98); }
+  .card-view { display: none; background: white; border: 1px solid #e0e0e0; border-radius: 14px; padding: 1.5rem; margin-bottom: 1rem; }
+  .card-view.show { display: block; }
+  .card-title-label { font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.75rem; }
+  .card-ja { font-size: 15px; color: #1a1a1a; line-height: 1.8; padding: 1rem; background: #f7f7f5; border-radius: 10px; white-space: pre-wrap; margin-bottom: 0.75rem; }
+  .card-symptoms-list { font-size: 13px; color: #0F6E56; font-weight: 600; }
+  .maps-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 1rem; background: white; color: #333; border: 1px solid #e0e0e0; border-radius: 14px; font-size: 15px; cursor: pointer; text-decoration: none; margin-bottom: 0.75rem; -webkit-tap-highlight-color: transparent; }
+  .maps-btn:active { background: #f0f0f0; }
+  .footer { text-align: center; margin-top: 2rem; font-size: 11px; color: #bbb; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="lang-bar">
+    <button class="lang-btn active" onclick="setLang('en',this)">EN</button>
+    <button class="lang-btn" onclick="setLang('zh',this)">中文</button>
+    <button class="lang-btn" onclick="setLang('ko',this)">한국어</button>
+    <button class="lang-btn" onclick="setLang('ja',this)">日本語</button>
+  </div>
+  <div class="hero">
+    <div class="hero-icon">🏥</div>
+    <div class="hero-title" id="hero-title">Feeling unwell?</div>
+    <div class="hero-sub" id="hero-sub">Select your symptoms below</div>
+  </div>
+  <button class="emergency-btn" onclick="callEmergency()">
+    <span style="font-size:22px;">🚨</span>
+    <span id="emergency-label">Emergency — Call 119</span>
+  </button>
+  <div class="section-label" id="section-symptoms">Your symptoms</div>
+  <div class="symptoms-grid">
+    <button class="symptom-btn" onclick="toggleSymptom(this,'headache')">
+      <span class="symptom-icon">🤕</span>
+      <span id="s-headache">Headache</span>
+    </button>
+    <button class="symptom-btn" onclick="toggleSymptom(this,'stomach')">
+      <span class="symptom-icon">🤢</span>
+      <span id="s-stomach">Stomach pain</span>
+    </button>
+    <button class="symptom-btn" onclick="toggleSymptom(this,'itch')">
+      <span class="symptom-icon">😣</span>
+      <span id="s-itch">Itching / rash</span>
+    </button>
+    <button class="symptom-btn" onclick="toggleSymptom(this,'foot')">
+      <span class="symptom-icon">🦵</span>
+      <span id="s-foot">Leg / foot pain</span>
+    </button>
+    <button class="symptom-btn" onclick="toggleSymptom(this,'fever')">
+      <span class="symptom-icon">🌡️</span>
+      <span id="s-fever">Fever / chills</span>
+    </button>
+    <button class="symptom-btn" onclick="toggleSymptom(this,'dizzy')">
+      <span class="symptom-icon">💫</span>
+      <span id="s-dizzy">Dizziness</span>
+    </button>
+  </div>
+  <div class="input-area">
+    <div class="section-label" id="section-other">Other symptoms</div>
+    <textarea class="symptom-input" id="other-input" rows="2" placeholder="Describe in your language..."></textarea>
+  </div>
+  <button class="action-btn" onclick="showCard()" id="card-btn">Show reception card</button>
+  <div class="card-view" id="reception-card">
+    <div class="card-title-label" id="card-title-label">Show this to the clinic receptionist</div>
+    <div class="card-ja" id="card-ja-text"></div>
+    <div class="card-symptoms-list" id="card-symptoms-display"></div>
+  </div>
+  <a class="maps-btn" id="maps-link" href="#" onclick="openMaps(event)">
+    <span>📍</span>
+    <span id="maps-label">Find nearby clinic</span>
+  </a>
+  <div class="footer">Omamori — Medical Bridge</div>
+</div>
+<script>
+var lang='en';
+var selected={};
+var t={en:{heroTitle:'Feeling unwell?',heroSub:'Select your symptoms below',emergency:'Emergency — Call 119',sectionSymptoms:'Your symptoms',sectionOther:'Other symptoms',otherPlaceholder:'Describe in your language...',cardBtn:'Show reception card',cardTitleLabel:'Show this to the clinic receptionist',mapsLabel:'Find nearby clinic',symptoms:{headache:'Headache',stomach:'Stomach pain',itch:'Itching / rash',foot:'Leg / foot pain',fever:'Fever / chills',dizzy:'Dizziness'}},zh:{heroTitle:'感觉不舒服？',heroSub:'请选择您的症状',emergency:'紧急情况 — 拨打119',sectionSymptoms:'您的症状',sectionOther:'其他症状',otherPlaceholder:'用您的语言描述...',cardBtn:'显示接待卡',cardTitleLabel:'请出示给诊所接待员',mapsLabel:'寻找附近诊所',symptoms:{headache:'头痛',stomach:'胃痛',itch:'瘙痒/皮疹',foot:'腿/脚疼痛',fever:'发烧/发冷',dizzy:'头晕'}},ko:{heroTitle:'몸이 불편하신가요?',heroSub:'증상을 선택하세요',emergency:'응급 — 119 전화',sectionSymptoms:'증상',sectionOther:'기타 증상',otherPlaceholder:'증상을 설명해주세요...',cardBtn:'접수 카드 보기',cardTitleLabel:'이것을 접수원에게 보여주세요',mapsLabel:'근처 병원 찾기',symptoms:{headache:'두통',stomach:'복통',itch:'가려움/발진',foot:'다리/발 통증',fever:'발열/오한',dizzy:'어지러움'}},ja:{heroTitle:'体調が悪いですか？',heroSub:'症状を選んでください',emergency:'緊急 — 119番に電話',sectionSymptoms:'症状',sectionOther:'その他の症状',otherPlaceholder:'症状を入力してください...',cardBtn:'受付カードを表示',cardTitleLabel:'受付スタッフに見せてください',mapsLabel:'近くのクリニックを探す',symptoms:{headache:'頭痛',stomach:'腹痛',itch:'かゆみ・発疹',foot:'足・脚の痛み',fever:'発熱・悪寒',dizzy:'めまい'}}};
+var jaSymptoms={headache:'頭痛があります。',stomach:'お腹が痛いです。',itch:'かゆみ・発疹があります。',foot:'足・脚が痛いです。',fever:'熱・悪寒があります。',dizzy:'めまいがします。'};
+function setLang(l,btn){lang=l;document.querySelectorAll('.lang-btn').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');var d=t[l];document.getElementById('hero-title').textContent=d.heroTitle;document.getElementById('hero-sub').textContent=d.heroSub;document.getElementById('emergency-label').textContent=d.emergency;document.getElementById('section-symptoms').textContent=d.sectionSymptoms;document.getElementById('section-other').textContent=d.sectionOther;document.getElementById('other-input').placeholder=d.otherPlaceholder;document.getElementById('card-btn').textContent=d.cardBtn;document.getElementById('card-title-label').textContent=d.cardTitleLabel;document.getElementById('maps-label').textContent=d.mapsLabel;Object.keys(d.symptoms).forEach(function(k){document.getElementById('s-'+k).textContent=d.symptoms[k];});}
+function toggleSymptom(btn,key){if(selected[key]){delete selected[key];btn.classList.remove('selected');}else{selected[key]=true;btn.classList.add('selected');}}
+function showCard(){var keys=Object.keys(selected);var other=document.getElementById('other-input').value.trim();var jaText='症状をお知らせします。\n\n';var displayList=[];if(keys.length===0&&!other){jaText+='症状の選択をお願いします。';}else{keys.forEach(function(k){jaText+=jaSymptoms[k]+'\n';displayList.push(t[lang].symptoms[k]);});if(other){jaText+='\nその他：'+other;displayList.push(other);}}jaText+='\n\n（外国人患者です。英語での対応をお願いできますか？）';document.getElementById('card-ja-text').textContent=jaText;document.getElementById('card-symptoms-display').textContent=displayList.join(' · ');var card=document.getElementById('reception-card');card.classList.add('show');setTimeout(function(){card.scrollIntoView({behavior:'smooth',block:'nearest'});},100);}
+function callEmergency(){if(confirm('Call 119 (Emergency / 救急)?')){window.location.href='tel:119';}}
+function openMaps(e){e.preventDefault();window.open('https://www.google.com/maps/search/クリニック+内科','_blank');}
+</script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>Omamori — Medical Guide for Visitors to Japan</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f7f7f5; min-height: 100vh; }
+  .app { max-width: 420px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+  .lang-bar { display: flex; gap: 8px; justify-content: flex-end; margin-bottom: 1.5rem; }
+  .lang-btn { font-size: 12px; padding: 5px 12px; border: 1px solid #ccc; border-radius: 20px; background: white; color: #666; cursor: pointer; }
+  .lang-btn.active { background: #1D9E75; color: white; border-color: #1D9E75; }
+  .hero { text-align: center; margin-bottom: 2rem; }
+  .hero-icon { font-size: 52px; margin-bottom: 0.5rem; }
+  .hero-title { font-size: 22px; font-weight: 600; color: #1a1a1a; margin-bottom: 0.25rem; }
+  .hero-sub { font-size: 14px; color: #777; }
+  .emergency-btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 1rem; background: #E24B4A; color: white; border: none; border-radius: 14px; font-size: 17px; font-weight: 600; cursor: pointer; margin-bottom: 2rem; -webkit-tap-highlight-color: transparent; }
+  .emergency-btn:active { opacity: 0.85; transform: scale(0.98); }
+  .section-label { font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.75rem; }
+  .symptoms-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.5rem; }
+  .symptom-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 1rem 0.5rem; background: white; border: 1px solid #e0e0e0; border-radius: 14px; cursor: pointer; font-size: 13px; color: #333; -webkit-tap-highlight-color: transparent; }
+  .symptom-btn.selected { background: #E1F5EE; border: 2px solid #1D9E75; color: #0F6E56; font-weight: 600; }
+  .symptom-icon { font-size: 30px; }
+  .input-area { margin-bottom: 1.5rem; }
+  .symptom-input { width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 10px; font-size: 14px; font-family: inherit; color: #333; background: white; resize: none; }
+  .symptom-input:focus { outline: none; border-color: #1D9E75; }
+  .action-btn { width: 100%; padding: 1rem; background: #1D9E75; color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 600; cursor: pointer; margin-bottom: 0.75rem; -webkit-tap-highlight-color: transparent; }
+  .action-btn:active { opacity: 0.85; transform: scale(0.98); }
+  .card-view { display: none; background: white; border: 1px solid #e0e0e0; border-radius: 14px; padding: 1.5rem; margin-bottom: 1rem; }
+  .card-view.show { display: block; }
+  .card-title-label { font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.75rem; }
+  .card-ja { font-size: 15px; color: #1a1a1a; line-height: 1.8; padding: 1rem; background: #f7f7f5; border-radius: 10px; white-space: pre-wrap; margin-bottom: 0.75rem; }
+  .card-symptoms-list { font-size: 13px; color: #0F6E56; font-weight: 600; }
+  .maps-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 1rem; background: white; color: #333; border: 1px solid #e0e0e0; border-radius: 14px; font-size: 15px; cursor: pointer; text-decoration: none; margin-bottom: 0.75rem; -webkit-tap-highlight-color: transparent; }
+  .maps-btn:active { background: #f0f0f0; }
+  .footer { text-align: center; margin-top: 2rem; font-size: 11px; color: #bbb; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="lang-bar">
+    <button class="lang-btn active" onclick="setLang('en',this)">EN</button>
+    <button class="lang-btn" onclick="setLang('zh',this)">中文</button>
+    <button class="lang-btn" onclick="setLang('ko',this)">한국어</button>
+    <button class="lang-btn" onclick="setLang('ja',this)">日本語</button>
+  </div>
+  <div class="hero">
+    <div class="hero-icon">🏥</div>
+    <div class="hero-title" id="hero-title">Feeling unwell?</div>
+    <div class="hero-sub" id="hero-sub">Select your symptoms below</div>
+  </div>
+  <button class="emergency-btn" onclick="callEmergency()">
+    <span style="font-size:22px;">🚨</span>
+    <span id="emergency-label">Emergency — Call 119</span>
+  </button>
+  <div class="section-label" id="section-symptoms">Your symptoms</div>
+  <div class="symptoms-grid">
+    <button class="symptom-btn" onclick="toggleSymptom(this,'headache')">
+      <span class="symptom-icon">🤕</span>
+      <span id="s-headache">Headache</span>
+    </button>
+    <button class="symptom-btn" onclick="toggleSymptom(this,'stomach')">
+      <span class="symptom-icon">🤢</span>
+      <span id="s-stomach">Stomach pain</span>
+    </button>
+    <button class="symptom-btn" onclick="toggleSymptom(this,'itch')">
+      <span class="symptom-icon">😣</span>
+      <span id="s-itch">Itching / rash</span>
+    </button>
+    <button class="symptom-btn" onclick="toggleSymptom(this,'foot')">
+      <span class="symptom-icon">🦵</span>
+      <span id="s-foot">Leg / foot pain</span>
+    </button>
+    <button class="symptom-btn" onclick="toggleSymptom(this,'fever')">
+      <span class="symptom-icon">🌡️</span>
+      <span id="s-fever">Fever / chills</span>
+    </button>
+    <button class="symptom-btn" onclick="toggleSymptom(this,'dizzy')">
+      <span class="symptom-icon">💫</span>
+      <span id="s-dizzy">Dizziness</span>
+    </button>
+  </div>
+  <div class="input-area">
+    <div class="section-label" id="section-other">Other symptoms</div>
+    <textarea class="symptom-input" id="other-input" rows="2" placeholder="Describe in your language..."></textarea>
+  </div>
+  <button class="action-btn" onclick="showCard()" id="card-btn">Show reception card</button>
+  <div class="card-view" id="reception-card">
+    <div class="card-title-label" id="card-title-label">Show this to the clinic receptionist</div>
+    <div class="card-ja" id="card-ja-text"></div>
+    <div class="card-symptoms-list" id="card-symptoms-display"></div>
+  </div>
+  <a class="maps-btn" id="maps-link" href="#" onclick="openMaps(event)">
+    <span>📍</span>
+    <span id="maps-label">Find nearby clinic</span>
+  </a>
+  <div class="footer">Omamori — Medical Bridge</div>
+</div>
+<script>
+var lang='en';
+var selected={};
+var t={en:{heroTitle:'Feeling unwell?',heroSub:'Select your symptoms below',emergency:'Emergency — Call 119',sectionSymptoms:'Your symptoms',sectionOther:'Other symptoms',otherPlaceholder:'Describe in your language...',cardBtn:'Show reception card',cardTitleLabel:'Show this to the clinic receptionist',mapsLabel:'Find nearby clinic',symptoms:{headache:'Headache',stomach:'Stomach pain',itch:'Itching / rash',foot:'Leg / foot pain',fever:'Fever / chills',dizzy:'Dizziness'}},zh:{heroTitle:'感觉不舒服？',heroSub:'请选择您的症状',emergency:'紧急情况 — 拨打119',sectionSymptoms:'您的症状',sectionOther:'其他症状',otherPlaceholder:'用您的语言描述...',cardBtn:'显示接待卡',cardTitleLabel:'请出示给诊所接待员',mapsLabel:'寻找附近诊所',symptoms:{headache:'头痛',stomach:'胃痛',itch:'瘙痒/皮疹',foot:'腿/脚疼痛',fever:'发烧/发冷',dizzy:'头晕'}},ko:{heroTitle:'몸이 불편하신가요?',heroSub:'증상을 선택하세요',emergency:'응급 — 119 전화',sectionSymptoms:'증상',sectionOther:'기타 증상',otherPlaceholder:'증상을 설명해주세요...',cardBtn:'접수 카드 보기',cardTitleLabel:'이것을 접수원에게 보여주세요',mapsLabel:'근처 병원 찾기',symptoms:{headache:'두통',stomach:'복통',itch:'가려움/발진',foot:'다리/발 통증',fever:'발열/오한',dizzy:'어지러움'}},ja:{heroTitle:'体調が悪いですか？',heroSub:'症状を選んでください',emergency:'緊急 — 119番に電話',sectionSymptoms:'症状',sectionOther:'その他の症状',otherPlaceholder:'症状を入力してください...',cardBtn:'受付カードを表示',cardTitleLabel:'受付スタッフに見せてください',mapsLabel:'近くのクリニックを探す',symptoms:{headache:'頭痛',stomach:'腹痛',itch:'かゆみ・発疹',foot:'足・脚の痛み',fever:'発熱・悪寒',dizzy:'めまい'}}};
+var jaSymptoms={headache:'頭痛があります。',stomach:'お腹が痛いです。',itch:'かゆみ・発疹があります。',foot:'足・脚が痛いです。',fever:'熱・悪寒があります。',dizzy:'めまいがします。'};
+function setLang(l,btn){lang=l;document.querySelectorAll('.lang-btn').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');var d=t[l];document.getElementById('hero-title').textContent=d.heroTitle;document.getElementById('hero-sub').textContent=d.heroSub;document.getElementById('emergency-label').textContent=d.emergency;document.getElementById('section-symptoms').textContent=d.sectionSymptoms;document.getElementById('section-other').textContent=d.sectionOther;document.getElementById('other-input').placeholder=d.otherPlaceholder;document.getElementById('card-btn').textContent=d.cardBtn;document.getElementById('card-title-label').textContent=d.cardTitleLabel;document.getElementById('maps-label').textContent=d.mapsLabel;Object.keys(d.symptoms).forEach(function(k){document.getElementById('s-'+k).textContent=d.symptoms[k];});}
+function toggleSymptom(btn,key){if(selected[key]){delete selected[key];btn.classList.remove('selected');}else{selected[key]=true;btn.classList.add('selected');}}
+function showCard(){var keys=Object.keys(selected);var other=document.getElementById('other-input').value.trim();var jaText='症状をお知らせします。\n\n';var displayList=[];if(keys.length===0&&!other){jaText+='症状の選択をお願いします。';}else{keys.forEach(function(k){jaText+=jaSymptoms[k]+'\n';displayList.push(t[lang].symptoms[k]);});if(other){jaText+='\nその他：'+other;displayList.push(other);}}jaText+='\n\n（外国人患者です。英語での対応をお願いできますか？）';document.getElementById('card-ja-text').textContent=jaText;document.getElementById('card-symptoms-display').textContent=displayList.join(' · ');var card=document.getElementById('reception-card');card.classList.add('show');setTimeout(function(){card.scrollIntoView({behavior:'smooth',block:'nearest'});},100);}
+function callEmergency(){if(confirm('Call 119 (Emergency / 救急)?')){window.location.href='tel:119';}}
+function openMaps(e){e.preventDefault();window.open('https://www.google.com/maps/search/クリニック+内科','_blank');}
+</script>
 </body>
 </html>
-
-
